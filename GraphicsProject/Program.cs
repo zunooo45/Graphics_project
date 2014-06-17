@@ -13,6 +13,7 @@ namespace GraphicsProject
             using (var renderer = new Renderer())
             {
                 renderer.Run();
+
             }
         }
     }
