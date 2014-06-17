@@ -19,7 +19,7 @@ namespace GraphicsProject
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            this.SwapBuffers();
+            this.SwapBuffers(); 
         }
     }
 }
