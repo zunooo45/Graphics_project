@@ -12,7 +12,7 @@ namespace GraphicsProject
         {
             using (var renderer = new Renderer())
             {
-                renderer.Run();
+                renderer.Run(30, 30);
 
             }
         }
