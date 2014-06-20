@@ -70,6 +70,8 @@ namespace GraphicsProject
             Cursor = MouseCursor.Empty;
             WindowBorder = WindowBorder.Hidden;
             WindowState = WindowState.Fullscreen;
+
+            GL.LineWidth(10);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -90,6 +92,8 @@ namespace GraphicsProject
                 colors.AddRange(v.GetColorData().ToList());
                 vertcount += v.VertCount;
             }
+
+
 
             vertdata = verts.ToArray();
             indicedata = inds.ToArray();
@@ -159,9 +163,14 @@ namespace GraphicsProject
             foreach (Volume v in objects)
             {
                 GL.UniformMatrix4(shaders[activeShader].GetUniform("modelview"), false, ref v.ModelViewProjectionMatrix);
-                GL.DrawElements(BeginMode.Triangles, v.IndiceCount, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
+                GL.DrawElements(PrimitiveType.Triangles, v.IndiceCount, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
                 indiceat += v.IndiceCount;
             }
+
+            GL.Begin(PrimitiveType.LineStrip);
+            GL.Vertex3(0, 0, 0);
+            GL.Vertex3(10, 10, 10);
+            GL.End();
 
             shaders[activeShader].DisableVertexAttribArrays();
  
