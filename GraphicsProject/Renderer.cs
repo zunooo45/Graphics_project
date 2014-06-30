@@ -58,6 +58,7 @@ namespace GraphicsProject
             program["view_matrix"].SetValue(Matrix4.LookAt(new Vector3(0, 0, 10), Vector3.Zero, new Vector3(0, 1, 0)));
 
             this.pyramid = new Pyramid(program);
+            this.pyramid.Camera = cam;
             this.pyramid.OnLoad();
             this.pyramid.SetPosition(new Vector3(-1.5f, 0, 0));
 
@@ -65,6 +66,7 @@ namespace GraphicsProject
             for (int i = 0; i < 200; i++)
             {
                 var cube = new Cube(program);
+                cube.Camera = cam;
                 cube.OnLoad();
                 cube.SetPosition(new Vector3(rand.Next(-8, 8), rand.Next(-8, 8), rand.Next(-100, -1)));
                 cube.SetScale(new Vector3((float)rand.NextDouble()));

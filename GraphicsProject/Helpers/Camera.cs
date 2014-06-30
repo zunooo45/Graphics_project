@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 
-namespace GraphicsProject
+namespace GraphicsProject.Helpers
 {
     public class Camera
     {
@@ -23,7 +19,7 @@ namespace GraphicsProject
                              Z = (float)(Math.Cos(this.Orientation.X) * Math.Cos(this.Orientation.Y))
                          };
 
-            return Matrix4.LookAt(Position, Position + lookat, Vector3.UnitY);
+            return Matrix4.LookAt(this.Position, this.Position + lookat, Vector3.UnitY);
         }
 
         public void Move(float x, float y, float z)
@@ -38,19 +34,28 @@ namespace GraphicsProject
             offset.Y += z;
 
             offset.NormalizeFast();
-            offset = Vector3.Multiply(offset, MoveSpeed);
+            offset = Vector3.Multiply(offset, this.MoveSpeed);
 
-            Position += offset;
+            this.Position += offset;
+
+            var handle = this.CameraChanged;
+            if (handle != null)
+                handle();
         }
 
         public void AddRotation(float x, float y)
         {
-            x = x * MouseSensitivity;
-            y = y * MouseSensitivity;
+            x = x * this.MouseSensitivity;
+            y = y * this.MouseSensitivity;
 
-            Orientation.X = (Orientation.X + x) % ((float)Math.PI * 2.0f);
-            Orientation.Y = Math.Max(Math.Min(Orientation.Y + y, (float)Math.PI / 2.0f - 0.1f), (float)-Math.PI / 2.0f + 0.1f);
+            this.Orientation.X = (this.Orientation.X + x) % ((float)Math.PI * 2.0f);
+            this.Orientation.Y = Math.Max(Math.Min(this.Orientation.Y + y, (float)Math.PI / 2.0f - 0.1f), (float)-Math.PI / 2.0f + 0.1f);
+
+            var handle = this.CameraChanged;
+            if (handle != null)
+                handle();
         }
 
+        public event Action CameraChanged;
     }
 }
