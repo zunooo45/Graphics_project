@@ -1,67 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GraphicsProject.Helpers;
 using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
+using Glu = OpenTK.Graphics.Glu;
 
 namespace GraphicsProject
 {
     public class Renderer : GameWindow
     {
-        Dictionary<string, ShaderProgram> shaders = new Dictionary<string, ShaderProgram>();
-        string activeShader = "default";
-
-        Dictionary<string, int> textures = new Dictionary<string, int>();
-
-        int ibo_elements;
-
-        Vector3[] vertdata;
-        Vector3[] coldata;
-        List<Volume> objects = new List<Volume>();
-        int[] indicedata;
-
         float time = 0.0f;
 
         private Camera cam = new Camera();
         private Vector2 lastMousePos = new Vector2();
+        
+        private ShaderProgram program;
+        private Pyramid pyramid;
+        private Stopwatch watch = new Stopwatch();
+        private float angle;
+        List<Cube> cubes = new List<Cube>(); 
 
         public Renderer()
-            : base(512, 512, new GraphicsMode(32, 24, 0, 4))
+            : base(512, 512, new OpenTK.Graphics.GraphicsMode(32, 24, 0, 4))
         {
             
         }
 
         void initProgram()
         {
-            GL.GenBuffers(1, out ibo_elements);
+            //GL.GenBuffers(1, out ibo_elements);
 
-            shaders.Add("default", new ShaderProgram("vs.glsl", "fs.glsl", true));
+            //shaders.Add("default", new ShaderProgram("vs.glsl", "fs.glsl", true));
 
 
-            objects.Add(new Cube());
-            objects.Add(new Cube());
-            Random rand = new Random();
+            //objects.Add(new Cube());
+            //objects.Add(new Cube());
+            //Random rand = new Random();
 
-            for (int i = 0; i < 100; i++)
+            //    var c = new ColorCube(new Vector3((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble()));
+            //    c.Position = new Vector3(rand.Next(-4, 4), rand.Next(-4, 4), rand.Next(-8, 8));
+            //    c.Rotation = new Vector3(rand.Next(0, 6), rand.Next(0, 6), rand.Next(0, 6));
+            //    c.Scale = Vector3.One * ((float)rand.NextDouble() + 0.2f);
+
+            //    objects.Add(c);
+            //}
+
+            program = new ShaderProgram(File.ReadAllText("vs.glsl"), File.ReadAllText("fs.glsl"));
+            program.Use();
+            program["projection_matrix"].SetValue(Matrix4.CreatePerspectiveFieldOfView(0.45f, (float)this.Width / this.Height, 0.1f, 1000.0f));
+            program["view_matrix"].SetValue(Matrix4.LookAt(new Vector3(0, 0, 10), Vector3.Zero, new Vector3(0, 1, 0)));
+
+            this.pyramid = new Pyramid(program);
+            this.pyramid.OnLoad();
+            this.pyramid.SetPosition(new Vector3(-1.5f, 0, 0));
+
+            var rand = new Random();
+            for (int i = 0; i < 200; i++)
             {
-                var c = new ColorCube(new Vector3((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble()));
-                c.Position = new Vector3(rand.Next(-4, 4), rand.Next(-4, 4), rand.Next(-8, 8));
-                c.Rotation = new Vector3(rand.Next(0, 6), rand.Next(0, 6), rand.Next(0, 6));
-                c.Scale = Vector3.One * ((float)rand.NextDouble() + 0.2f);
-
-                objects.Add(c);
+                var cube = new Cube(program);
+                cube.OnLoad();
+                cube.SetPosition(new Vector3(rand.Next(-8, 8), rand.Next(-8, 8), rand.Next(-100, -1)));
+                cube.SetScale(new Vector3((float)rand.NextDouble()));
+                cubes.Add(cube);
             }
 
+            this.watch.Start();
         }
 
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
             initProgram();
 
             Title = "Hello OpenTK!";
@@ -78,54 +95,6 @@ namespace GraphicsProject
         {
             base.OnUpdateFrame(e);
 
-            var verts = new List<Vector3>();
-            var inds = new List<int>();
-            var colors = new List<Vector3>();
-
-
-            int vertcount = 0;
-
-            foreach (Volume v in objects)
-            {
-                verts.AddRange(v.GetVerts().ToList());
-                inds.AddRange(v.GetIndices(vertcount).ToList());
-                colors.AddRange(v.GetColorData().ToList());
-                vertcount += v.VertCount;
-            }
-
-
-
-            vertdata = verts.ToArray();
-            indicedata = inds.ToArray();
-            coldata = colors.ToArray();
-
-            time += (float)e.Time;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, shaders[activeShader].GetBuffer("vPosition"));
-
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertdata.Length * Vector3.SizeInBytes), vertdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shaders[activeShader].GetAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            if (shaders[activeShader].GetAttribute("vColor") != -1)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, shaders[activeShader].GetBuffer("vColor"));
-                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(coldata.Length * Vector3.SizeInBytes), coldata, BufferUsageHint.StaticDraw);
-                GL.VertexAttribPointer(shaders[activeShader].GetAttribute("vColor"), 3, VertexAttribPointerType.Float, true, 0, 0);
-            }
-
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(indicedata.Length * sizeof(int)), indicedata, BufferUsageHint.StaticDraw);
-
-
-            objects[0].Position = new Vector3(0.3f, -0.5f + (float)Math.Sin(time), -3.0f);
-            objects[0].Rotation = new Vector3(0.55f * time, 0.25f * time, 0);
-            objects[0].Scale = new Vector3(0.1f, 0.1f, 0.1f);
-
-            objects[1].Position = new Vector3(-1f, 0.5f + (float)Math.Cos(time), -2.0f);
-            objects[1].Rotation = new Vector3(-0.25f * time, -0.35f * time, 0);
-            objects[1].Scale = new Vector3(0.25f, 0.25f, 0.25f);
-
             if (Focused)
             {
                 Vector2 delta = lastMousePos - new Vector2(OpenTK.Input.Mouse.GetState().X, OpenTK.Input.Mouse.GetState().Y);
@@ -134,18 +103,44 @@ namespace GraphicsProject
                 ResetCursor();
             }
 
-            foreach (Volume v in objects)
+
+        //    foreach (Volume v in objects)
+        //    {
+        //        v.CalculateModelMatrix();
+        //        v.ViewProjectionMatrix = cam.GetViewMatrix() *
+        //                                 Matrix4.CreatePerspectiveFieldOfView(1.3f, ClientSize.Width / (float)ClientSize.Height, 1.0f, 40.0f);
+        //        v.ModelViewProjectionMatrix = v.ModelMatrix * v.ViewProjectionMatrix;
+        //    }
+
+
+        //    GL.UseProgram(shaders[activeShader].ProgramID);
+
+        //    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            const float step = 0.5f;
+            switch (e.Key)
             {
-                v.CalculateModelMatrix();
-                v.ViewProjectionMatrix = cam.GetViewMatrix() *
-                                         Matrix4.CreatePerspectiveFieldOfView(1.3f, ClientSize.Width / (float)ClientSize.Height, 1.0f, 40.0f);
-                v.ModelViewProjectionMatrix = v.ModelMatrix * v.ViewProjectionMatrix;
+                case Key.A:
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X - step, this.pyramid.Position.Y, this.pyramid.Position.Z));
+                    break;
+                case Key.D:
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X + step, this.pyramid.Position.Y, this.pyramid.Position.Z));
+                    break;
+                case Key.S:
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z + step));
+                    break;
+                case Key.W:
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z - step));
+                    break;
+                case Key.Escape:
+                    this.Exit();
+                    break;
             }
-
-
-            GL.UseProgram(shaders[activeShader].ProgramID);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -156,36 +151,32 @@ namespace GraphicsProject
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Enable(EnableCap.DepthTest);
 
-            shaders[activeShader].EnableVertexAttribArrays();
+            this.watch.Stop();
+            var delta = this.watch.ElapsedMilliseconds / 1000f;
+            this.watch.Restart();
+            this.angle += delta;
 
-            int indiceat = 0;
 
-            foreach (Volume v in objects)
+            program.Use();
+
+
+            this.pyramid.SetAngle(angle);
+            this.pyramid.OnRenderFrame();
+
+            foreach (var cube in cubes)
             {
-                GL.UniformMatrix4(shaders[activeShader].GetUniform("modelview"), false, ref v.ModelViewProjectionMatrix);
-                GL.DrawElements(PrimitiveType.Triangles, v.IndiceCount, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
-                indiceat += v.IndiceCount;
+                cube.SetAngle(angle);
+                cube.OnRenderFrame();
             }
 
-            GL.Begin(PrimitiveType.LineStrip);
-            GL.Vertex3(0, 0, 0);
-            GL.Vertex3(10, 10, 10);
-            GL.End();
-
-            shaders[activeShader].DisableVertexAttribArrays();
- 
-            GL.Flush();
-            SwapBuffers();
+            this.SwapBuffers();
         }
 
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-
-            GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
-            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, Width / (float)Height, 1.0f, 64.0f);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref projection);
+            
+            program["projection_matrix"].SetValue(Matrix4.CreatePerspectiveFieldOfView(0.45f, (float)this.Width / this.Height, 0.1f, 1000.0f));
         }
 
         protected override void OnKeyPress(KeyPressEventArgs e)
@@ -217,9 +208,6 @@ namespace GraphicsProject
                 case 'e':
                     cam.Move(0f, 0f, -0.1f);
                     break;
-                case 'z':
-                    this.Exit();
-                    break;
             }
         }
 
@@ -237,6 +225,18 @@ namespace GraphicsProject
             {
                 ResetCursor();
             }
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            this.program.DisposeChildren = true;
+            this.program.Dispose();
+            this.pyramid.Dispose(); 
+
+            foreach (var cube in cubes)
+                cube.Dispose();
         }
     }
 }
