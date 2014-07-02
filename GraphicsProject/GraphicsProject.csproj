@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\Camera.cs" />
+    <Compile Include="Helpers\FatLine.cs" />
     <Compile Include="Helpers\Cube.cs" />
     <Compile Include="Helpers\GLMethods.cs" />
     <Compile Include="Helpers\Line.cs" />
