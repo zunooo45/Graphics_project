@@ -13,9 +13,12 @@ namespace GraphicsProject.Helpers
         private Matrix4 modelMatrix;
         private float angle;
 
+        public float RotationSpeed { get; set; }
+
         public Cube(ShaderProgram program)
         {
             this.program = program;
+            this.RotationSpeed = 1;
         }
 
         public override void OnLoad()
@@ -63,7 +66,7 @@ namespace GraphicsProject.Helpers
 
         public void SetAngle(float angle)
         {
-            this.angle = angle;
+            this.angle = angle * RotationSpeed;
             this.CalculateModelMatrix();
         }
 

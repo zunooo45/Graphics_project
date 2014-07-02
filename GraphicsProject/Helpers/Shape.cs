@@ -8,28 +8,12 @@ namespace GraphicsProject.Helpers
         private Vector3 position;
         private Vector3 rotation;
         private Vector3 scale;
-        private Camera camera;
-
+        
         public Shape()
         {
             this.position = Vector3.Zero;
             this.rotation = Vector3.Zero;
             this.scale = Vector3.One;
-        }
-
-        public Camera Camera
-        {
-            get { return this.camera; }
-            set
-            {
-                if (this.camera != null)
-                    this.camera.CameraChanged -= this.CalculateModelMatrix;
-
-                this.camera = value;
-
-                if (this.camera != null)
-                    this.camera.CameraChanged += this.CalculateModelMatrix;
-            }
         }
 
         public Vector3 Position
