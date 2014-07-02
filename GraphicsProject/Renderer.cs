@@ -96,7 +96,7 @@ namespace GraphicsProject
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
-
+            int x = 6;
             if (Focused)
             {
                 Vector2 delta = lastMousePos - new Vector2(OpenTK.Input.Mouse.GetState().X, OpenTK.Input.Mouse.GetState().Y);
@@ -105,19 +105,22 @@ namespace GraphicsProject
                 ResetCursor();
             }
 
+            program["projection_matrix"].SetValue(
+                cam.GetViewMatrix() *
+                Matrix4.CreatePerspectiveFieldOfView(0.45f, (float)this.Width / this.Height, 0.1f, 1000.0f));
 
-        //    foreach (Volume v in objects)
-        //    {
-        //        v.CalculateModelMatrix();
-        //        v.ViewProjectionMatrix = cam.GetViewMatrix() *
-        //                                 Matrix4.CreatePerspectiveFieldOfView(1.3f, ClientSize.Width / (float)ClientSize.Height, 1.0f, 40.0f);
-        //        v.ModelViewProjectionMatrix = v.ModelMatrix * v.ViewProjectionMatrix;
-        //    }
+            //    foreach (Volume v in objects)
+            //    {
+            //        v.CalculateModelMatrix();
+            //        v.ViewProjectionMatrix = cam.GetViewMatrix() *
+            //                                 Matrix4.CreatePerspectiveFieldOfView(1.3f, ClientSize.Width / (float)ClientSize.Height, 1.0f, 40.0f);
+            //        v.ModelViewProjectionMatrix = v.ModelMatrix * v.ViewProjectionMatrix;
+            //    }
 
 
-        //    GL.UseProgram(shaders[activeShader].ProgramID);
+            //    GL.UseProgram(shaders[activeShader].ProgramID);
 
-        //    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            //    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
@@ -127,17 +130,35 @@ namespace GraphicsProject
             const float step = 0.5f;
             switch (e.Key)
             {
-                case Key.A:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X - step, this.pyramid.Position.Y, this.pyramid.Position.Z));
+                case Key.Up:
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z - step));
                     break;
-                case Key.D:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X + step, this.pyramid.Position.Y, this.pyramid.Position.Z));
-                    break;
-                case Key.S:
+                case Key.Down:
                     this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z + step));
                     break;
+                case Key.Left:
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X - step, this.pyramid.Position.Y, this.pyramid.Position.Z));
+                    break;
+                case Key.Right:
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X + step, this.pyramid.Position.Y, this.pyramid.Position.Z));
+                    break;
+                case Key.A:
+                    cam.Move(-0.1f, 0f, 0f);
+                    break;
+                case Key.D:
+                    cam.Move(0.1f, 0f, 0f);
+                    break;
+                case Key.E:
+                    cam.Move(0f, 0f, -0.1f);
+                    break;
+                case Key.Q:
+                    cam.Move(0f, 0f, 0.1f);
+                    break;
+                case Key.S:
+                    cam.Move(0f, -0.1f, 0f);
+                    break;
                 case Key.W:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z - step));
+                    cam.Move(0f, 0.1f, 0f);
                     break;
                 case Key.Escape:
                     this.Exit();
@@ -179,38 +200,6 @@ namespace GraphicsProject
             base.OnResize(e);
             
             program["projection_matrix"].SetValue(Matrix4.CreatePerspectiveFieldOfView(0.45f, (float)this.Width / this.Height, 0.1f, 1000.0f));
-        }
-
-        protected override void OnKeyPress(KeyPressEventArgs e)
-        {
-            base.OnKeyPress(e);
-
-            if (e.KeyChar == 27)
-            {
-                Exit();
-            }
-
-            switch (e.KeyChar)
-            {
-                case 'w':
-                    cam.Move(0f, 0.1f, 0f);
-                    break;
-                case 'a':
-                    cam.Move(-0.1f, 0f, 0f);
-                    break;
-                case 's':
-                    cam.Move(0f, -0.1f, 0f);
-                    break;
-                case 'd':
-                    cam.Move(0.1f, 0f, 0f);
-                    break;
-                case 'q':
-                    cam.Move(0f, 0f, 0.1f);
-                    break;
-                case 'e':
-                    cam.Move(0f, 0f, -0.1f);
-                    break;
-            }
         }
 
         void ResetCursor()

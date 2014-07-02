@@ -54,12 +54,7 @@ namespace GraphicsProject.Helpers
 
         private void CalculateModelMatrix()
         {
-            var cameraMatrix = Matrix4.Identity;
-            if (this.Camera != null)
-                cameraMatrix = this.Camera.GetViewMatrix();
-
-            modelMatrix = cameraMatrix *
-                          Matrix4.CreateScale(Scale) *
+            modelMatrix = Matrix4.CreateScale(Scale) *
                           Matrix4.CreateRotationX(this.angle) *
                           Matrix4.CreateRotationY(this.angle / 2) *
                           Matrix4.CreateRotationZ(Rotation.Z) *

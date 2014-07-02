@@ -51,12 +51,7 @@ namespace GraphicsProject.Helpers
 
         protected override void CalculateModelMatrix()
         {
-            var cameraMatrix = Matrix4.Identity;
-            if (this.Camera != null)
-                cameraMatrix = this.Camera.GetViewMatrix();
-
-            modelMatrix = cameraMatrix *
-                          Matrix4.CreateScale(Scale) *
+            modelMatrix = Matrix4.CreateScale(Scale) *
                           Matrix4.CreateRotationX(Rotation.X) *
                           Matrix4.CreateRotationY(this.angle) *
                           Matrix4.CreateRotationZ(Rotation.Z) *
