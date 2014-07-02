@@ -20,6 +20,8 @@ namespace GraphicsProject.Helpers
 
         public override void OnLoad()
         {
+            base.OnLoad();
+
             this.pyramid = new VBO<Vector3>(new[]
                                             {
                                                 new Vector3(0, 1, 0), new Vector3(-1, -1,  1), new Vector3( 1, -1,  1),

@@ -23,6 +23,8 @@ namespace GraphicsProject.Helpers
 
         public override void OnLoad()
         {
+            base.OnLoad();
+
             this.cube = new VBO<Vector3>(new[]
                                          {
                                              new Vector3( 1,  1, -1), new Vector3(-1,  1, -1), new Vector3(-1,  1,  1), new Vector3( 1,  1,  1),
@@ -55,7 +57,7 @@ namespace GraphicsProject.Helpers
             GL.DrawElements(PrimitiveType.Quads, this.cubeElements.Count, DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
 
-        private void CalculateModelMatrix()
+        protected override void CalculateModelMatrix()
         {
             modelMatrix = Matrix4.CreateScale(Scale) *
                           Matrix4.CreateRotationX(this.angle) *

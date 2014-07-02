@@ -14,6 +14,7 @@ namespace GraphicsProject
     {
         private readonly Camera camera = new Camera();
         private readonly IList<Cube> cubes = new List<Cube>();
+        private readonly IList<Line> lines = new List<Line>();
         private readonly Stopwatch watch = new Stopwatch();
         private float angle;
         private Vector2 lastMousePos;
@@ -37,6 +38,9 @@ namespace GraphicsProject
 
             foreach (Cube cube in this.cubes)
                 cube.Dispose();
+
+            foreach (Line line in this.lines)
+                line.Dispose();
         }
 
         protected override void OnFocusedChanged(EventArgs e)
@@ -51,38 +55,39 @@ namespace GraphicsProject
         {
             base.OnKeyDown(e);
 
-            const float step = 0.5f;
+            const float shapeStep = 0.5f;
+            const float cameraStep = 0.3f;
             switch (e.Key)
             {
                 case Key.Up:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z - step));
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z - shapeStep));
                     break;
                 case Key.Down:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z + step));
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z + shapeStep));
                     break;
                 case Key.Left:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X - step, this.pyramid.Position.Y, this.pyramid.Position.Z));
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X - shapeStep, this.pyramid.Position.Y, this.pyramid.Position.Z));
                     break;
                 case Key.Right:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X + step, this.pyramid.Position.Y, this.pyramid.Position.Z));
+                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X + shapeStep, this.pyramid.Position.Y, this.pyramid.Position.Z));
                     break;
                 case Key.A:
-                    this.camera.Move(-0.1f, 0f, 0f);
+                    this.camera.Move(-cameraStep, 0f, 0f);
                     break;
                 case Key.D:
-                    this.camera.Move(0.1f, 0f, 0f);
+                    this.camera.Move(cameraStep, 0f, 0f);
                     break;
                 case Key.E:
-                    this.camera.Move(0f, 0f, -0.1f);
+                    this.camera.Move(0f, 0f, -cameraStep);
                     break;
                 case Key.Q:
-                    this.camera.Move(0f, 0f, 0.1f);
+                    this.camera.Move(0f, 0f, cameraStep);
                     break;
                 case Key.S:
-                    this.camera.Move(0f, -0.1f, 0f);
+                    this.camera.Move(0f, -cameraStep, 0f);
                     break;
                 case Key.W:
-                    this.camera.Move(0f, 0.1f, 0f);
+                    this.camera.Move(0f, cameraStep, 0f);
                     break;
                 case Key.Escape:
                     this.Exit();
@@ -132,6 +137,19 @@ namespace GraphicsProject
                 cube.OnRenderFrame();
             }
 
+            foreach (var line in lines)
+            {
+                line.OnRenderFrame();
+            }
+            //GL.LineWidth(10);
+            //GL.Begin(PrimitiveType.Lines);
+            //foreach (var cube in cubes)
+            //{
+            //    GL.Color4(Color.Black);
+            //    GL.Vertex3(cube.Position);
+            //}
+            //GL.End();
+
             this.SwapBuffers();
         }
 
@@ -173,14 +191,23 @@ namespace GraphicsProject
             this.pyramid.SetPosition(new Vector3(-1.5f, 0, 0));
 
             var rand = new Random();
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 10; i++)
             {
                 var cube = new Cube(this.program);
                 cube.OnLoad();
                 cube.RotationSpeed = (float)(rand.NextDouble() + 1);
                 cube.SetPosition(new Vector3(rand.Next(-8, 8), rand.Next(-8, 8), rand.Next(-100, -1)));
-                cube.SetScale(new Vector3((float)rand.NextDouble()));
+                //cube.SetScale(new Vector3((float)rand.NextDouble()));
                 this.cubes.Add(cube);
+            }
+
+            for (int i = 0; i < 9; i++)
+            {
+                var firstPos = this.cubes[i].Position;
+                var secondPos = this.cubes[i+1].Position;
+                var line = new Line(this.program, firstPos, secondPos);
+                line.OnLoad();
+                this.lines.Add(line);
             }
 
             this.watch.Start();

@@ -55,7 +55,11 @@ namespace GraphicsProject.Helpers
         protected virtual void CalculateModelMatrix()
         { }
 
-        public abstract void OnLoad();
+        public virtual void OnLoad()
+        {
+            this.CalculateModelMatrix();
+        }
+
         public abstract void OnRenderFrame();
         public abstract void Dispose();
     }
