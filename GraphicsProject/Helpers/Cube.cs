@@ -96,7 +96,7 @@ namespace GraphicsProject.Helpers
             }
         }
 
-        private void setColor(Vector3 priColor, Vector3 secColor)
+        public void setColor(Vector3 priColor, Vector3 secColor)
         {
             this.cubeColor.Dispose();
             this.cubeColor =

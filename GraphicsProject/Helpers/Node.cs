@@ -12,10 +12,15 @@ namespace GraphicsProject.Helpers
         private IList<Node> neighbors = new List<Node>();
         private IList<Edge> edges = new List<Edge>();
         private Cube cube;
+        private Dictionary<String, Vector3[]> modes = new Dictionary<String, Vector3[]>();
 
         public Node(Cube pCube)
         {
             cube = pCube;
+            modes.Add("Unvisited",  new Vector3[] { new Vector3(1, 0, 0), new Vector3(0.5f, 0, 0) });
+            modes.Add("Visited",    new Vector3[] { new Vector3(1, 1, 0), new Vector3(0.5f, 0.5f, 0) });
+            modes.Add("Start",      new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, 0.5f, 0) });
+            modes.Add("End",        new Vector3[] { new Vector3(0, 0, 1), new Vector3(0, 0, 0.5f) });
         }
 
         public void connect(Node other, Edge connection)
@@ -37,9 +42,13 @@ namespace GraphicsProject.Helpers
             return neighbors;
         }
 
-        public void select()
+        public void setMode(String pMode)
         {
-            this.cube.select();
+            Vector3 priColor = modes[pMode][0];
+            Vector3 secColor = modes[pMode][1];
+            this.cube.setColor(priColor, secColor);
         }
+
+
     }
 }

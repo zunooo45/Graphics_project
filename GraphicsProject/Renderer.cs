@@ -50,30 +50,68 @@ namespace GraphicsProject
             this.pyramid.SetPosition(new Vector3(-1.5f, 0, 0));
 
             var rand = new Random();
+
             for (int i = 0; i < 10; i++)
-            {
+            {                
                 var cube = new Cube(this.program);
                 cube.OnLoad();
                 cube.RotationSpeed = (float)(rand.NextDouble() + 1);
-                cube.SetPosition(new Vector3(rand.Next(-10, 10), rand.Next(-10, 10), rand.Next(-60, -20)));
-                //cube.SetScale(new Vector3((float)rand.NextDouble()));
+                cube.SetPosition(new Vector3(rand.Next(-50, 50), rand.Next(-50, 50), rand.Next(-80, -40)));
                 this.cubes.Add(cube);
-                this.nodes.Add(new Node(cube));
-            }
 
-            for (int i = 0; i < 9; i++)
-            {
-                Node firstPos = this.nodes[i];
-                Node secondPos = this.nodes[i+1];
-                var edge = new Edge(this.program, firstPos, secondPos);
-                
+                // Create new node
+                Node node = new Node(cube);
+                this.nodes.Add(node);
+
+                // Connect the new node to a random node
+                int sourceNum = (int)(rand.Next(0, nodes.Count - 1));
+                var edge = new Edge(this.program, nodes[sourceNum], node);
                 var line = edge.getLine();
                 line.OnLoad();
                 this.lines.Add(line);
             }
 
+            for (int i = 0; i < 3; i++)
+            {
+                int sourceNum = (int)(rand.Next(0, nodes.Count - 1));
+                int destNum = (int)(rand.Next(0, nodes.Count - 1));
+                
+                if (sourceNum != destNum)
+                {
+                    var edge = new Edge(this.program, nodes[sourceNum], nodes[destNum]);
+                    var line = edge.getLine();
+                    line.OnLoad();
+                    this.lines.Add(line);
+                }
+            }
+
+                //for (int i = 0; i < 10; i++)
+                //{
+                //    var cube = new Cube(this.program);
+                //    cube.OnLoad();
+                //    cube.RotationSpeed = (float)(rand.NextDouble() + 1);
+                //    cube.SetPosition(new Vector3(rand.Next(-10, 10), rand.Next(-10, 10), rand.Next(-60, -20)));
+                //    //cube.SetScale(new Vector3((float)rand.NextDouble()));
+                //    this.cubes.Add(cube);
+                //    this.nodes.Add(new Node(cube));
+                //}
+
+                //for (int i = 0; i < 9; i++)
+                //{
+                //    Node firstPos = this.nodes[i];
+                //    Node secondPos = this.nodes[i+1];
+                //    var edge = new Edge(this.program, firstPos, secondPos);
+
+                //    var line = edge.getLine();
+                //    line.OnLoad();
+                //    this.lines.Add(line);
+                //}
+
             start = nodes[1];
+            start.setMode("Start");
             end = nodes[nodes.Count - 1];
+            end.setMode("End");
+
             visited.Add(nodes[1], false);
             worklist.Enqueue(nodes[1]);
 
@@ -220,15 +258,24 @@ namespace GraphicsProject
             if (worklist.Count != 0)
             {
                 Node nextNode = worklist.Dequeue();
-                nextNode.select();
-
-                foreach (Node neighbor in nextNode.getNeighbors())
+                
+                if (nextNode == end)
                 {
-                    if (!visited.ContainsKey(neighbor))
+                    worklist.Clear();
+                }
+                else
+                {
+                    nextNode.setMode("Visited");
+
+                    foreach (Node neighbor in nextNode.getNeighbors())
                     {
-                        visited.Add(neighbor, false);
-                        worklist.Enqueue(neighbor);
+                        if (!visited.ContainsKey(neighbor))
+                        {
+                            visited.Add(neighbor, false);
+                            worklist.Enqueue(neighbor);
+                        }
                     }
+
                 }
             }
         }
