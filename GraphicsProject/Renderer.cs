@@ -22,7 +22,9 @@ namespace GraphicsProject
         private ShaderProgram program;
         private Pyramid pyramid;
         private float time = 0.0f;
-        
+
+        private bool mouseFree;
+
         public Renderer()
             : base(512, 512, new OpenTK.Graphics.GraphicsMode(32, 24, 0, 4))
         {
@@ -81,12 +83,14 @@ namespace GraphicsProject
 
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.LineSmooth);
+
+            mouseFree = false;
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
-            if (this.Focused)
+            if (this.Focused && !mouseFree)
             {
                 Vector2 delta = this.lastMousePos - new Vector2(OpenTK.Input.Mouse.GetState().X, OpenTK.Input.Mouse.GetState().Y);
 
@@ -168,6 +172,18 @@ namespace GraphicsProject
                 case Key.W:
                     this.camera.Move(0f, cameraStep, 0f);
                     break;
+                case Key.Space:
+                    mouseFree = !mouseFree;
+                    if(mouseFree)
+                    {
+                        this.Cursor = MouseCursor.Default;
+                    }
+                    else
+                    {
+                        this.ResetCursor();
+                        this.Cursor = MouseCursor.Empty;
+                    }
+                    break;
                 case Key.Escape:
                     this.Exit();
                     break;
@@ -196,8 +212,11 @@ namespace GraphicsProject
 
         private void ResetCursor()
         {
-            OpenTK.Input.Mouse.SetPosition(this.Bounds.Left + this.Bounds.Width / 2, this.Bounds.Top + this.Bounds.Height / 2);
-            this.lastMousePos = new Vector2(OpenTK.Input.Mouse.GetState().X, OpenTK.Input.Mouse.GetState().Y);
+            if(!mouseFree)
+            {
+                OpenTK.Input.Mouse.SetPosition(this.Bounds.Left + this.Bounds.Width / 2, this.Bounds.Top + this.Bounds.Height / 2);
+                this.lastMousePos = new Vector2(OpenTK.Input.Mouse.GetState().X, OpenTK.Input.Mouse.GetState().Y);
+            }
         }
 
         private void SetProjectionMatrix(Matrix4 matrix)
