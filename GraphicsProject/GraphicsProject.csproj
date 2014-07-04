@@ -53,10 +53,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\Camera.cs" />
+    <Compile Include="Helpers\Edge.cs" />
     <Compile Include="Helpers\FatLine.cs" />
     <Compile Include="Helpers\Cube.cs" />
     <Compile Include="Helpers\GLMethods.cs" />
     <Compile Include="Helpers\Line.cs" />
+    <Compile Include="Helpers\Node.cs" />
     <Compile Include="Helpers\Pyramid.cs" />
     <Compile Include="Helpers\Shader.cs" />
     <Compile Include="Helpers\Shape.cs" />

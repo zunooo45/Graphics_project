@@ -16,6 +16,7 @@ namespace GraphicsProject.Helpers
         private ShaderProgram program;
         private Matrix4 modelMatrix;
         private Vector3[] points;
+        private bool isSelected;
 
         public Line(ShaderProgram program, params Vector3[] points)
         {
@@ -33,6 +34,29 @@ namespace GraphicsProject.Helpers
                     new Vector3(0, 0, 0),
                     this.points.Length).ToArray());
             this.lineElements = new VBO<int>(new[] { 0, 1 }, BufferTarget.ElementArrayBuffer);
+            isSelected = false;
+        }
+
+        private void setColor(Vector3 color)
+        {
+            this.lineColor.Dispose();
+            this.lineColor =
+                new VBO<Vector3>(Enumerable.Repeat(
+                    new Vector3(color),
+                    this.points.Length).ToArray());
+        }
+
+        public void select()
+        {
+            isSelected = !isSelected;
+            if(isSelected)
+            {
+                setColor(new Vector3(1, 0, 0));
+            }
+            else
+            {
+                setColor(new Vector3(0, 0, 0));
+            }
         }
 
         public override void OnRenderFrame()

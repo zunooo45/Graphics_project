@@ -187,6 +187,12 @@ namespace GraphicsProject
                 case Key.Escape:
                     this.Exit();
                     break;
+                case Key.V:
+                    foreach(Cube selected in this.cubes)
+                    {
+                        selected.select();
+                    }
+                    break;
             }
         }
 

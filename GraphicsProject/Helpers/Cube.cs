@@ -12,7 +12,7 @@ namespace GraphicsProject.Helpers
         private ShaderProgram program;
         private Matrix4 modelMatrix;
         private float angle;
-
+        private bool isSelected;
         public float RotationSpeed { get; set; }
 
         public Cube(ShaderProgram program)
@@ -37,14 +37,16 @@ namespace GraphicsProject.Helpers
             this.cubeColor =
                 new VBO<Vector3>(new[]
                                  {
-                                     new Vector3( 0,  1,  0),    new Vector3( 0,  1,  0),    new Vector3( 0,  1,  0),    new Vector3( 0,  1,  0),
-                                     new Vector3( 1,  0.5f,  0), new Vector3( 1,  0.5f,  0), new Vector3( 0.5f,  1,  0), new Vector3( 1,  0.5f,  0),
-                                     new Vector3( 1,  0,  0),    new Vector3( 1,  0,  0),    new Vector3( 1,  0,  0),    new Vector3( 1,  0,  0),
-                                     new Vector3( 1,  1,  0),    new Vector3( 1,  1,  0),    new Vector3( 1,  1,  0),    new Vector3( 1,  1,  0),
-                                     new Vector3( 0,  0,  1),    new Vector3( 0,  0,  1),    new Vector3( 0,  0,  1),    new Vector3( 0,  0,  1),
-                                     new Vector3( 1,  0,  1),    new Vector3( 1,  0,  1),    new Vector3( 1,  0,  1),    new Vector3( 1,  0,  1),
+                                     new Vector3( 1,  0,  0),       new Vector3( 1,  0,  0),        new Vector3( 1,  0,  0),        new Vector3( 0.5f,  0,  0),
+                                     new Vector3( 1,  0,  0),       new Vector3( 1,  0,  0),        new Vector3( 1,  0,  0),        new Vector3( 0.5f,  0,  0),
+                                     new Vector3( 1,  0,  0),       new Vector3( 1,  0,  0),        new Vector3( 1,  0,  0),        new Vector3( 0.5f,  0,  0),
+                                     new Vector3( 1,  0,  0),       new Vector3( 1,  0,  0),        new Vector3( 1,  0,  0),        new Vector3( 0.5f,  0,  0),
+                                     new Vector3( 1,  0,  0),       new Vector3( 1,  0,  0),        new Vector3( 1,  0,  0),        new Vector3( 0.5f,  0,  0),
+                                     new Vector3( 1,  0,  0),       new Vector3( 1,  0,  0),        new Vector3( 1,  0,  0),        new Vector3( 0.5f,  0,  0),
                                  });
             this.cubeElements = new VBO<int>(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 }, BufferTarget.ElementArrayBuffer);
+            
+            isSelected = false;
         }
 
         public override void OnRenderFrame()
@@ -77,6 +79,41 @@ namespace GraphicsProject.Helpers
             this.cube.Dispose();
             this.cubeColor.Dispose();
             this.cubeElements.Dispose();
+        }
+
+        public void select()
+        {
+            isSelected = !isSelected;
+            if(isSelected)
+            {
+                setColor(new Vector3(0, 0, 1), new Vector3(0, 0, 0.5f));
+                this.RotationSpeed = 1;
+            }
+            else
+            {
+                setColor(new Vector3(1, 0, 0), new Vector3(0.5f, 0, 0));
+                this.RotationSpeed = 0;
+            }
+        }
+
+        private void setColor(Vector3 priColor, Vector3 secColor)
+        {
+            this.cubeColor.Dispose();
+            this.cubeColor =
+                new VBO<Vector3>(new[]
+                                 {
+                                     new Vector3(priColor),    new Vector3(secColor),     new Vector3(priColor),     new Vector3(secColor), // Top
+                                     new Vector3(priColor),    new Vector3(secColor),     new Vector3(priColor),     new Vector3(secColor), // Bottom
+                                     new Vector3(secColor),    new Vector3(priColor),     new Vector3(secColor),     new Vector3(priColor), // Front
+                                     new Vector3(secColor),    new Vector3(priColor),     new Vector3(secColor),     new Vector3(priColor), // Back
+                                     new Vector3(priColor),    new Vector3(secColor),     new Vector3(priColor),     new Vector3(secColor), // Right
+                                     new Vector3(priColor),    new Vector3(secColor),     new Vector3(priColor),     new Vector3(secColor), // Left
+                                 });
+        }
+
+        public Vector3 getPosition()
+        {
+            return this.Position;
         }
     }
 }
