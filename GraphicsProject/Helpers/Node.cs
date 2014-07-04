@@ -31,5 +31,15 @@ namespace GraphicsProject.Helpers
         {
             return cube.getPosition(); 
         }
+
+        public IList<Node> getNeighbors()
+        {
+            return neighbors;
+        }
+
+        public void select()
+        {
+            this.cube.select();
+        }
     }
 }

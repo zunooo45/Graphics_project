@@ -14,7 +14,9 @@ namespace GraphicsProject
     {
         private readonly Camera camera = new Camera();
         private readonly IList<Cube> cubes = new List<Cube>();
+        private readonly IList<Node> nodes = new List<Node>();
         private readonly IList<Line> lines = new List<Line>();
+        private readonly IList<Edge> edges = new List<Edge>();
         private readonly Stopwatch watch = new Stopwatch();
         private float angle;
         private Vector2 lastMousePos;
@@ -23,7 +25,13 @@ namespace GraphicsProject
         private Pyramid pyramid;
         private float time = 0.0f;
 
+        private Node start { get; set; }
+        private Node end { get; set; }
+
         private bool mouseFree;
+
+        Dictionary<Node, bool> visited = new Dictionary<Node, bool>();
+        Queue<Node> worklist = new Queue<Node>();
 
         public Renderer()
             : base(512, 512, new OpenTK.Graphics.GraphicsMode(32, 24, 0, 4))
@@ -50,16 +58,24 @@ namespace GraphicsProject
                 cube.SetPosition(new Vector3(rand.Next(-10, 10), rand.Next(-10, 10), rand.Next(-60, -20)));
                 //cube.SetScale(new Vector3((float)rand.NextDouble()));
                 this.cubes.Add(cube);
+                this.nodes.Add(new Node(cube));
             }
 
             for (int i = 0; i < 9; i++)
             {
-                var firstPos = this.cubes[i].Position;
-                var secondPos = this.cubes[i+1].Position;
-                var line = new Line(this.program, firstPos, secondPos);
+                Node firstPos = this.nodes[i];
+                Node secondPos = this.nodes[i+1];
+                var edge = new Edge(this.program, firstPos, secondPos);
+                
+                var line = edge.getLine();
                 line.OnLoad();
                 this.lines.Add(line);
             }
+
+            start = nodes[1];
+            end = nodes[nodes.Count - 1];
+            visited.Add(nodes[1], false);
+            worklist.Enqueue(nodes[1]);
 
             this.watch.Start();
         }
@@ -193,6 +209,27 @@ namespace GraphicsProject
                         selected.select();
                     }
                     break;
+                case Key.N:
+                    stepGraph();
+                    break;
+            }
+        }
+
+        public void stepGraph()
+        {
+            if (worklist.Count != 0)
+            {
+                Node nextNode = worklist.Dequeue();
+                nextNode.select();
+
+                foreach (Node neighbor in nextNode.getNeighbors())
+                {
+                    if (!visited.ContainsKey(neighbor))
+                    {
+                        visited.Add(neighbor, false);
+                        worklist.Enqueue(neighbor);
+                    }
+                }
             }
         }
 
