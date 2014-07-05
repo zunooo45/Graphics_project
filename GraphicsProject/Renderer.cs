@@ -145,8 +145,8 @@ namespace GraphicsProject
         {
             base.OnKeyDown(e);
 
-            const float shapeStep = 0.5f;
-            const float cameraStep = 0.3f;
+            const float shapeStep = 5.5f;
+            const float cameraStep = 5.5f;
             switch (e.Key)
             {
                 case Key.Up:
