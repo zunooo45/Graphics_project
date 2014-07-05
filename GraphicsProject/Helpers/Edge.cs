@@ -19,7 +19,7 @@ namespace GraphicsProject.Helpers
             end = pEnd;
 
             start.connect(end, this);
-            start.connect(start, this);
+            end.connect(start, this);
 
             line = new Line(program, start.getPostion(), end.getPostion());
         }
