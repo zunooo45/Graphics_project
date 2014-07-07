@@ -13,7 +13,6 @@ namespace GraphicsProject
         {
             using (var renderer = new Renderer())
             {
-                renderer.LoadGraph(new SimpleTree());
                 renderer.Run(30, 30);
             }
         }

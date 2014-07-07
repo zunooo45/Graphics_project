@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GraphicsProject.Helpers;
 
 namespace GraphicsProject
 {
@@ -31,7 +32,7 @@ namespace GraphicsProject
             {
                 yield return this.startNode;
                 this.visitedNodes.Add(this.startNode);
-                foreach (var node in this.graph.GetAdjacentNodes(this.startNode))
+                foreach (var node in this.startNode.getNeighbors())
                 {
                     if (!this.visitedNodes.Contains(node))
                     {

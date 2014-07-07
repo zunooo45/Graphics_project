@@ -7,18 +7,18 @@ using OpenTK;
 
 namespace GraphicsProject.Helpers
 {
-    class GraphicNode
+    public class Node
     {
-        private IList<GraphicNode> neighbors = new List<GraphicNode>();
-        private IList<GraphicEdge> edges = new List<GraphicEdge>();
+        private IList<Node> neighbors = new List<Node>();
+        private IList<Edge> edges = new List<Edge>();
         private Cube cube;
 
-        public GraphicNode(Cube pCube)
+        public Node(Cube pCube)
         {
             cube = pCube;
         }
 
-        public void connect(GraphicNode other, GraphicEdge connection)
+        public void connect(Node other, Edge connection)
         {
             if (!neighbors.Contains(other))
             {
@@ -32,7 +32,7 @@ namespace GraphicsProject.Helpers
             return cube.getPosition(); 
         }
 
-        public IList<GraphicNode> getNeighbors()
+        public IList<Node> getNeighbors()
         {
             return neighbors;
         }
@@ -40,6 +40,11 @@ namespace GraphicsProject.Helpers
         public void select()
         {
             this.cube.select();
+        }
+
+        public Cube getCube()
+        {
+            return this.cube;
         }
     }
 }

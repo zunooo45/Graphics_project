@@ -7,13 +7,13 @@ using OpenTK;
 
 namespace GraphicsProject.Helpers
 {
-    class GraphicEdge
+    public class Edge
     {
-        private GraphicNode start;
-        private GraphicNode end;
+        private Node start;
+        private Node end;
         private Line line;
 
-        public GraphicEdge(ShaderProgram program, GraphicNode pStart, GraphicNode pEnd)
+        public Edge(ShaderProgram program, Node pStart, Node pEnd)
         {
             start = pStart;
             end = pEnd;
@@ -22,6 +22,7 @@ namespace GraphicsProject.Helpers
             start.connect(start, this);
 
             line = new Line(program, start.getPostion(), end.getPostion());
+            line.OnLoad();
         }
 
         public Line getLine()

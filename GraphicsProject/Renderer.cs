@@ -62,39 +62,16 @@ namespace GraphicsProject
             GL.Enable(EnableCap.LineSmooth);
 
             mouseFree = false;
+
+            this.LoadGraph(new SimpleTree(this.program));
         }
 
         public void LoadGraph(Graph graph)
         {
             this.graph = graph;
 
-            var rand = new Random();
-            var nodeCubes = new Dictionary<Node, Cube>();
-            
-            foreach (var node in this.graph.Nodes)
-            {
-                var cube = new Cube(this.program);
-                cube.OnLoad();
-                cube.RotationSpeed = (float)(rand.NextDouble() + 1);
-                cube.SetPosition(new Vector3(node.X, node.Y, node.Z));
-                //cube.SetScale(new Vector3((float)rand.NextDouble()));
-                nodeCubes.Add(node, cube);
-                node.OnVisited = visited => cube.select();
- 
-                this.cubes.Add(cube);
-            }
-
-            foreach (var edge in this.graph.Edges)
-            {
-                var fromCube = nodeCubes[edge.FromNode];
-                var toCube = nodeCubes[edge.ToNode];
-
-                var line = new Line(this.program, fromCube.Position, toCube.Position);
-                line.OnLoad();
-                this.lines.Add(line);
-            }
-
-            var traverser = new DepthFirstTraversal(this.graph, this.graph.Nodes[0]);
+            //var traverser = new DepthFirstTraversal(this.graph, this.graph.Nodes[0]);
+            var traverser = new ShortestPathTraversal(this.graph);
             this.graphTraversal = traverser.TraversalOrder.GetEnumerator();
         }
 
@@ -102,7 +79,7 @@ namespace GraphicsProject
         {
             if (this.graphTraversal != null && this.graphTraversal.MoveNext())
             {
-                this.graphTraversal.Current.Visit();
+                this.graphTraversal.Current.select();
             }
             else
             {
@@ -142,14 +119,16 @@ namespace GraphicsProject
             this.program.Use();
 
 
-            foreach (Cube cube in this.cubes)
+            foreach (var node in this.graph.Nodes)
             {
+                var cube = node.getCube();
                 cube.SetAngle(this.angle);
                 cube.OnRenderFrame();
             }
 
-            foreach (var line in this.lines)
+            foreach (var edge in this.graph.Edges)
             {
+                var line = edge.getLine();
                 line.OnRenderFrame();
             }
 
