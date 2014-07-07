@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,8 +13,8 @@ namespace GraphicsProject
         {
             using (var renderer = new Renderer())
             {
+                renderer.LoadGraph(new SimpleTree());
                 renderer.Run(30, 30);
-
             }
         }
     }

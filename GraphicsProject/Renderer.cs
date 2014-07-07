@@ -14,28 +14,23 @@ namespace GraphicsProject
     {
         private readonly Camera camera = new Camera();
         private readonly IList<Cube> cubes = new List<Cube>();
-        private readonly IList<Node> nodes = new List<Node>();
         private readonly IList<Line> lines = new List<Line>();
-        private readonly IList<Edge> edges = new List<Edge>();
         private readonly Stopwatch watch = new Stopwatch();
         private float angle;
         private Vector2 lastMousePos;
 
         private ShaderProgram program;
-        private Pyramid pyramid;
         private float time = 0.0f;
 
-        private Node start { get; set; }
-        private Node end { get; set; }
+        private IEnumerator<Node> graphTraversal;
 
         private bool mouseFree;
-
-        Dictionary<Node, bool> visited = new Dictionary<Node, bool>();
-        Queue<Node> worklist = new Queue<Node>();
+        private Graph graph;
 
         public Renderer()
             : base(512, 512, new OpenTK.Graphics.GraphicsMode(32, 24, 0, 4))
         {
+            this.Initialize();
         }
 
         private void Initialize()
@@ -45,46 +40,12 @@ namespace GraphicsProject
             this.SetProjectionMatrix(this.GetFieldOfView());
             this.SetViewMatrix(Matrix4.LookAt(new Vector3(0, 0, 10), Vector3.Zero, new Vector3(0, 1, 0)));
 
-            this.pyramid = new Pyramid(this.program);
-            this.pyramid.OnLoad();
-            this.pyramid.SetPosition(new Vector3(-1.5f, 0, 0));
-
-            var rand = new Random();
-            for (int i = 0; i < 10; i++)
-            {
-                var cube = new Cube(this.program);
-                cube.OnLoad();
-                cube.RotationSpeed = (float)(rand.NextDouble() + 1);
-                cube.SetPosition(new Vector3(rand.Next(-10, 10), rand.Next(-10, 10), rand.Next(-60, -20)));
-                //cube.SetScale(new Vector3((float)rand.NextDouble()));
-                this.cubes.Add(cube);
-                this.nodes.Add(new Node(cube));
-            }
-
-            for (int i = 0; i < 9; i++)
-            {
-                Node firstPos = this.nodes[i];
-                Node secondPos = this.nodes[i+1];
-                var edge = new Edge(this.program, firstPos, secondPos);
-                
-                var line = edge.getLine();
-                line.OnLoad();
-                this.lines.Add(line);
-            }
-
-            start = nodes[1];
-            end = nodes[nodes.Count - 1];
-            visited.Add(nodes[1], false);
-            worklist.Enqueue(nodes[1]);
-
             this.watch.Start();
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-
-            this.Initialize();
 
             this.Title = "Hello OpenTK!";
             
@@ -101,6 +62,54 @@ namespace GraphicsProject
             GL.Enable(EnableCap.LineSmooth);
 
             mouseFree = false;
+        }
+
+        public void LoadGraph(Graph graph)
+        {
+            this.graph = graph;
+
+            var rand = new Random();
+            var nodeCubes = new Dictionary<Node, Cube>();
+            
+            foreach (var node in this.graph.Nodes)
+            {
+                var cube = new Cube(this.program);
+                cube.OnLoad();
+                cube.RotationSpeed = (float)(rand.NextDouble() + 1);
+                cube.SetPosition(new Vector3(node.X, node.Y, node.Z));
+                //cube.SetScale(new Vector3((float)rand.NextDouble()));
+                nodeCubes.Add(node, cube);
+                node.OnVisited = visited => cube.select();
+ 
+                this.cubes.Add(cube);
+            }
+
+            foreach (var edge in this.graph.Edges)
+            {
+                var fromCube = nodeCubes[edge.FromNode];
+                var toCube = nodeCubes[edge.ToNode];
+
+                var line = new Line(this.program, fromCube.Position, toCube.Position);
+                line.OnLoad();
+                this.lines.Add(line);
+            }
+
+            var traverser = new DepthFirstTraversal(this.graph, this.graph.Nodes[0]);
+            this.graphTraversal = traverser.TraversalOrder.GetEnumerator();
+        }
+
+        private void TraverseNode()
+        {
+            if (this.graphTraversal != null && this.graphTraversal.MoveNext())
+            {
+                this.graphTraversal.Current.Visit();
+            }
+            else
+            {
+                this.graphTraversal = null;
+                foreach (var cube in cubes)
+                    cube.select();
+            }
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -133,9 +142,6 @@ namespace GraphicsProject
             this.program.Use();
 
 
-            this.pyramid.SetAngle(this.angle);
-            this.pyramid.OnRenderFrame();
-
             foreach (Cube cube in this.cubes)
             {
                 cube.SetAngle(this.angle);
@@ -155,21 +161,9 @@ namespace GraphicsProject
             base.OnKeyDown(e);
 
             const float shapeStep = 0.5f;
-            const float cameraStep = 0.3f;
+            const float cameraStep = 0.8f;
             switch (e.Key)
             {
-                case Key.Up:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z - shapeStep));
-                    break;
-                case Key.Down:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X, this.pyramid.Position.Y, this.pyramid.Position.Z + shapeStep));
-                    break;
-                case Key.Left:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X - shapeStep, this.pyramid.Position.Y, this.pyramid.Position.Z));
-                    break;
-                case Key.Right:
-                    this.pyramid.SetPosition(new Vector3(this.pyramid.Position.X + shapeStep, this.pyramid.Position.Y, this.pyramid.Position.Z));
-                    break;
                 case Key.A:
                     this.camera.Move(-cameraStep, 0f, 0f);
                     break;
@@ -217,20 +211,21 @@ namespace GraphicsProject
 
         public void stepGraph()
         {
-            if (worklist.Count != 0)
-            {
-                Node nextNode = worklist.Dequeue();
-                nextNode.select();
+            this.TraverseNode();
+            //if (worklist.Count != 0)
+            //{
+            //    GraphicNode nextNode = worklist.Dequeue();
+            //    nextNode.select();
 
-                foreach (Node neighbor in nextNode.getNeighbors())
-                {
-                    if (!visited.ContainsKey(neighbor))
-                    {
-                        visited.Add(neighbor, false);
-                        worklist.Enqueue(neighbor);
-                    }
-                }
-            }
+            //    foreach (GraphicNode neighbor in nextNode.getNeighbors())
+            //    {
+            //        if (!visited.ContainsKey(neighbor))
+            //        {
+            //            visited.Add(neighbor, false);
+            //            worklist.Enqueue(neighbor);
+            //        }
+            //    }
+            //}
         }
 
         protected override void OnResize(EventArgs e)
@@ -278,8 +273,7 @@ namespace GraphicsProject
 
             this.program.DisposeChildren = true;
             this.program.Dispose();
-            this.pyramid.Dispose();
-
+            
             foreach (Cube cube in this.cubes)
                 cube.Dispose();
 

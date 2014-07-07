@@ -7,13 +7,13 @@ using OpenTK;
 
 namespace GraphicsProject.Helpers
 {
-    class Edge
+    class GraphicEdge
     {
-        private Node start;
-        private Node end;
+        private GraphicNode start;
+        private GraphicNode end;
         private Line line;
 
-        public Edge(ShaderProgram program, Node pStart, Node pEnd)
+        public GraphicEdge(ShaderProgram program, GraphicNode pStart, GraphicNode pEnd)
         {
             start = pStart;
             end = pEnd;

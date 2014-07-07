@@ -87,12 +87,12 @@ namespace GraphicsProject.Helpers
             if(isSelected)
             {
                 setColor(new Vector3(0, 0, 1), new Vector3(0, 0, 0.5f));
-                this.RotationSpeed = 1;
+                //this.RotationSpeed = 1;
             }
             else
             {
                 setColor(new Vector3(1, 0, 0), new Vector3(0.5f, 0, 0));
-                this.RotationSpeed = 0;
+                //this.RotationSpeed = 0;
             }
         }
 

@@ -52,21 +52,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DepthFirstTraversal.cs" />
+    <Compile Include="Edge.cs" />
+    <Compile Include="Graph.cs" />
     <Compile Include="Helpers\Camera.cs" />
-    <Compile Include="Helpers\Edge.cs" />
+    <Compile Include="Helpers\GraphicEdge.cs" />
     <Compile Include="Helpers\FatLine.cs" />
     <Compile Include="Helpers\Cube.cs" />
     <Compile Include="Helpers\GLMethods.cs" />
     <Compile Include="Helpers\Line.cs" />
-    <Compile Include="Helpers\Node.cs" />
+    <Compile Include="Helpers\GraphicNode.cs" />
     <Compile Include="Helpers\Pyramid.cs" />
     <Compile Include="Helpers\Shader.cs" />
     <Compile Include="Helpers\Shape.cs" />
     <Compile Include="Helpers\Texture.cs" />
     <Compile Include="Helpers\VBO.cs" />
+    <Compile Include="IGraphTraverser.cs" />
+    <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer.cs" />
+    <Compile Include="SimpleGraph.cs" />
+    <Compile Include="SimpleTree.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
