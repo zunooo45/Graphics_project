@@ -43,6 +43,10 @@ namespace GraphicsProject
 
                         yield return nextNode;
                     }
+                    else
+                    {
+                        yield break;
+                    }
                 }
             }
         }

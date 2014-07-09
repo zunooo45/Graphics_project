@@ -7,7 +7,7 @@ using OpenTK;
 
 namespace GraphicsProject.Helpers
 {
-    public class Edge
+    public class Edge : IDisposable
     {
         private Node start;
         private Node end;
@@ -28,6 +28,11 @@ namespace GraphicsProject.Helpers
         public Line getLine()
         {
             return this.line;
+        }
+
+        public void Dispose()
+        {
+            this.line.Dispose();
         }
     }
 }

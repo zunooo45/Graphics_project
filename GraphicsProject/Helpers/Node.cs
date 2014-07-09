@@ -7,7 +7,7 @@ using OpenTK;
 
 namespace GraphicsProject.Helpers
 {
-    public class Node
+    public class Node : IDisposable
     {
         private IList<Node> neighbors = new List<Node>();
         private IList<Edge> edges = new List<Edge>();
@@ -37,6 +37,11 @@ namespace GraphicsProject.Helpers
             return neighbors;
         }
 
+        public void ResetColoring()
+        {
+            this.cube.ResetColoring();
+        }
+
         public void select()
         {
             this.cube.select();
@@ -45,6 +50,11 @@ namespace GraphicsProject.Helpers
         public Cube getCube()
         {
             return this.cube;
+        }
+
+        public void Dispose()
+        {
+            this.cube.Dispose();
         }
     }
 }

@@ -12,9 +12,7 @@ namespace GraphicsProject
 {
     public class Renderer : GameWindow
     {
-        private readonly Camera camera = new Camera();
-        private readonly IList<Cube> cubes = new List<Cube>();
-        private readonly IList<Line> lines = new List<Line>();
+        private Camera camera = new Camera();
         private readonly Stopwatch watch = new Stopwatch();
         private float angle;
         private Vector2 lastMousePos;
@@ -26,6 +24,17 @@ namespace GraphicsProject
 
         private bool mouseFree;
         private Graph graph;
+        private Func<Graph, IGraphTraverser> graphTraverser;
+
+        public Func<Graph, IGraphTraverser> GraphTraverser
+        {
+            get { return this.graphTraverser; }
+            set
+            {
+                this.graphTraverser = value;
+                this.ResetGraph();
+            }
+        }
 
         public Renderer()
             : base(512, 512, new OpenTK.Graphics.GraphicsMode(32, 24, 0, 4))
@@ -62,16 +71,24 @@ namespace GraphicsProject
             GL.Enable(EnableCap.LineSmooth);
 
             mouseFree = false;
-
+ 
             this.LoadGraph(new SimpleTree(this.program));
+            this.GraphTraverser = g => new ShortestPathTraversal(g);
+            //this.GraphTraverser = g => new DepthFirstTraversal(g, g.Nodes[0]);
         }
 
         public void LoadGraph(Graph graph)
         {
             this.graph = graph;
+            this.CreateTraverser();
+        }
 
-            //var traverser = new DepthFirstTraversal(this.graph, this.graph.Nodes[0]);
-            var traverser = new ShortestPathTraversal(this.graph);
+        private void CreateTraverser()
+        {
+            if (this.GraphTraverser == null)
+                return;
+
+            var traverser = this.GraphTraverser(this.graph);
             this.graphTraversal = traverser.TraversalOrder.GetEnumerator();
         }
 
@@ -83,9 +100,7 @@ namespace GraphicsProject
             }
             else
             {
-                this.graphTraversal = null;
-                foreach (var cube in cubes)
-                    cube.select();
+                this.ResetGraph();
             }
         }
 
@@ -140,7 +155,7 @@ namespace GraphicsProject
             base.OnKeyDown(e);
 
             const float shapeStep = 0.5f;
-            const float cameraStep = 0.8f;
+            const float cameraStep = 0.5f;
             switch (e.Key)
             {
                 case Key.A:
@@ -154,6 +169,9 @@ namespace GraphicsProject
                     break;
                 case Key.Q:
                     this.camera.Move(0f, 0f, cameraStep);
+                    break;
+                case Key.R:
+                    this.camera = new Camera();
                     break;
                 case Key.S:
                     this.camera.Move(0f, -cameraStep, 0f);
@@ -177,34 +195,25 @@ namespace GraphicsProject
                     this.Exit();
                     break;
                 case Key.V:
-                    foreach(Cube selected in this.cubes)
-                    {
-                        selected.select();
-                    }
+                    this.ResetGraph();
                     break;
                 case Key.N:
-                    stepGraph();
+                    this.TraverseNode();
+                    break;
+                case Key.Number1:
+                    this.GraphTraverser = g => new ShortestPathTraversal(g);
+                    break;
+                case Key.Number2:
+                    this.GraphTraverser = g => new DepthFirstTraversal(g, g.Nodes[0]);
                     break;
             }
         }
 
-        public void stepGraph()
+        private void ResetGraph()
         {
-            this.TraverseNode();
-            //if (worklist.Count != 0)
-            //{
-            //    GraphicNode nextNode = worklist.Dequeue();
-            //    nextNode.select();
-
-            //    foreach (GraphicNode neighbor in nextNode.getNeighbors())
-            //    {
-            //        if (!visited.ContainsKey(neighbor))
-            //        {
-            //            visited.Add(neighbor, false);
-            //            worklist.Enqueue(neighbor);
-            //        }
-            //    }
-            //}
+            this.CreateTraverser();
+            foreach (var node in this.graph.Nodes)
+                node.ResetColoring();
         }
 
         protected override void OnResize(EventArgs e)
@@ -252,12 +261,8 @@ namespace GraphicsProject
 
             this.program.DisposeChildren = true;
             this.program.Dispose();
-            
-            foreach (Cube cube in this.cubes)
-                cube.Dispose();
 
-            foreach (Line line in this.lines)
-                line.Dispose();
+            this.graph.Dispose();
         }
     }
 }
