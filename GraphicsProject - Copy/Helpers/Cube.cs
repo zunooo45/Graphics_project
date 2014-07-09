@@ -79,14 +79,19 @@ namespace GraphicsProject.Helpers
             this.cubeElements.Dispose();
         }
 
-        public void ResetColoring()
-        {
-            setColor(new Vector3(1, 0, 0), new Vector3(0.5f, 0, 0));
-        }
-
         public void select()
         {
-            setColor(new Vector3(0, 0, 1), new Vector3(0, 0, 0.5f));
+            isSelected = !isSelected;
+            if(isSelected)
+            {
+                setColor(new Vector3(0, 0, 1), new Vector3(0, 0, 0.5f));
+                //this.RotationSpeed = 1;
+            }
+            else
+            {
+                setColor(new Vector3(1, 0, 0), new Vector3(0.5f, 0, 0));
+                //this.RotationSpeed = 0;
+            }
         }
 
         public void setColor(Vector3 priColor, Vector3 secColor)

@@ -7,7 +7,7 @@ using OpenTK;
 
 namespace GraphicsProject.Helpers
 {
-    public class Node : IDisposable
+    public class Node
     {
         private IList<Node> neighbors = new List<Node>();
         private IList<Edge> edges = new List<Edge>();
@@ -58,12 +58,25 @@ namespace GraphicsProject.Helpers
             return neighbors;
         }
 
-        public void ResetColoring()
+        public void setMode(String pMode)
         {
-            this.cube.ResetColoring();
+            if (mode != "Start" && mode != "End")
+            {
+                mode = pMode;
+
+                Vector3 priColor = modes[pMode][0];
+                Vector3 secColor = modes[pMode][1];
+                this.cube.setColor(priColor, secColor);
+            }
+    
+            if (pMode != "Unvisited")
+                cube.RotationSpeed = 0.5f;
+            else
+                cube.RotationSpeed = 0.0f;
         }
 
-        public void select()
+        // Find distance between two nodes
+        public Double distanceFrom(Node other)
         {
             var pos = this.getPostion();
             var otherPos = other.getPostion();
@@ -74,15 +87,5 @@ namespace GraphicsProject.Helpers
 
             return Math.Sqrt(difX * difX + difY * difY + difZ * difZ);
         }
-
-        public Cube getCube()
-        {
-            return this.cube;
-        }
-
-        public void Dispose()
-        {
-            this.cube.Dispose();
-        }
-    }
+    }                
 }
