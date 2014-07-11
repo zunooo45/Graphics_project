@@ -31,7 +31,7 @@ namespace GraphicsProject.Helpers
             modes.Add("Path",       new Vector3[] { new Vector3(1, 1, 0), new Vector3(0.5f, 0.5f, 0) });
             modes.Add("Start",      new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, 0.5f, 0) });
             modes.Add("End",        new Vector3[] { new Vector3(0, 0, 1), new Vector3(0, 0, 0.5f) });
-            this.setMode("Unvisited");
+            //this.setMode("Unvisited");
         }
 
         public String getMode()
@@ -65,14 +65,15 @@ namespace GraphicsProject.Helpers
 
         public void select()
         {
-            var pos = this.getPostion();
-            var otherPos = other.getPostion();
+            this.cube.select();
+            //var pos = this.getPostion();
+            //var otherPos = other.getPostion();
 
-            Double difX = (Double)Math.Abs(otherPos.X - pos.X);
-            Double difY = (Double)Math.Abs(otherPos.Y - pos.Y);
-            Double difZ = (Double)Math.Abs(otherPos.Z - pos.Z);
+            //Double difX = (Double)Math.Abs(otherPos.X - pos.X);
+            //Double difY = (Double)Math.Abs(otherPos.Y - pos.Y);
+            //Double difZ = (Double)Math.Abs(otherPos.Z - pos.Z);
 
-            return Math.Sqrt(difX * difX + difY * difY + difZ * difZ);
+            //return Math.Sqrt(difX * difX + difY * difY + difZ * difZ);
         }
 
         public Cube getCube()

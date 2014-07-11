@@ -47,7 +47,6 @@ namespace GraphicsProject
         private void Initialize()
         {
             this.program = new ShaderProgram(File.ReadAllText("vs.glsl"), File.ReadAllText("fs.glsl"));
-            this.graph = new Graph(program);
             
             this.program.Use();
             this.SetProjectionMatrix(this.GetFieldOfView());
