@@ -12,27 +12,23 @@ namespace GraphicsProject
     {
         public SimpleGraph(ShaderProgram program)
         {
-            var cube1 = new Cube(program);
-            cube1.OnLoad();
-            cube1.SetPosition(new Vector3(-10, 10, -100));
-
-            var cube2 = new Cube(program);
-            cube2.OnLoad();
-            cube2.SetPosition(new Vector3(10, 10, -100));
-
-            var cube3 = new Cube(program);
-            cube3.OnLoad();
-            cube3.SetPosition(new Vector3(10, -10, -100));
-
-            var cube4 = new Cube(program);
-            cube4.OnLoad();
-            cube4.SetPosition(new Vector3(-10, -10, -100));
-
-            var node1 = new Node(cube1);
-            var node2 = new Node(cube2);
-            var node3 = new Node(cube3);
-            var node4 = new Node(cube4);
-
+            var node1 = new Node(new Cube(program)
+                                 {
+                                     Position = new Vector3(-10, 10, -100)
+                                 });
+            var node2 = new Node(new Cube(program)
+                                 {
+                                     Position = new Vector3(10, 10, -100)
+                                 });
+            var node3 = new Node(new Cube(program)
+                                 {
+                                     Position = new Vector3(10, -10, -100)
+                                 });
+            var node4 = new Node(new Cube(program)
+                                 {
+                                     Position = new Vector3(-10, -10, -100)
+                                 });
+            
             this.Nodes.AddRange(new[] {node1, node2, node3, node4});
             this.Edges.AddRange(new[]
                                 {

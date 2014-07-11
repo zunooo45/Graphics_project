@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BigGraph.cs" />
     <Compile Include="DepthFirstTraversal.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="Helpers\Camera.cs" />

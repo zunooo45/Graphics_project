@@ -19,9 +19,10 @@ namespace GraphicsProject.Helpers
         {
             this.program = program;
             this.RotationSpeed = 1;
+            this.OnLoad();
         }
 
-        public override void OnLoad()
+        public override sealed void OnLoad()
         {
             base.OnLoad();
 

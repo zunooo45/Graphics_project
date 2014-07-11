@@ -19,19 +19,19 @@ namespace GraphicsProject.Helpers
         public Vector3 Position
         {
             get { return this.position; }
-            private set { this.position = value; }
+            set { this.SetPosition(value); }
         }
 
         public Vector3 Rotation
         {
             get { return this.rotation; }
-            private set { this.rotation = value; }
+            set { this.SetRotation(value); }
         }
 
         public Vector3 Scale
         {
             get { return this.scale; }
-            private set { this.scale = value; }
+            set { this.SetScale(value); }
         }
 
         public void SetPosition(Vector3 position)
