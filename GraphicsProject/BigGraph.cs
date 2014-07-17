@@ -15,7 +15,7 @@ namespace GraphicsProject
             this.random = new Random((int)DateTime.Now.Ticks);
             var currentPosition = new Vector3(0, 0, -100);
 
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 30; i++)
             {
                 this.Nodes.Add(new Node(new Cube(program)
                                         {
@@ -24,29 +24,23 @@ namespace GraphicsProject
                 currentPosition = this.GetRandomLocationFromPosition(currentPosition);
             }
 
-            Node previousNode = this.Nodes[0];
-            foreach (var node in Nodes.Skip(1))
+            foreach (Node node in this.Nodes)
             {
-                this.Edges.Add(new Edge(program, node, previousNode));
-                previousNode = node;
+                int NumEdges = this.random.Next(1, 3);
+                for (int i = 0; i < NumEdges; i++)
+                {
+                    var other = GetRandomCloseNode(node);
+                    this.Edges.Add(new Edge(program, node, other));
+                    node.connect(other, Edges[Edges.Count - 1]);
+                    other.connect(node, Edges[Edges.Count - 1]);
+                }
             }
-            this.Edges.Add(new Edge(program, previousNode, this.Nodes[0]));
-
-            //this.Edges.AddRange(new[]
-            //                    {
-            //                        new Edge(program, node1, node2),
-            //                        new Edge(program, node2, node3),
-            //                        new Edge(program, node3, node4),
-            //                        new Edge(program, node4, node1),
-            //                        new Edge(program, node3, node1),
-            //                        new Edge(program, node4, node2),
-            //                    });
         }
 
         private Random random;
         private Vector3 GetRandomLocationFromPosition(Vector3 sourceVector)
         {
-            const int maxDistance = 30;
+            const int maxDistance = 40;
             var position = new Vector3(
                 this.GetRandomValue((int)sourceVector.X, maxDistance),
                 this.GetRandomValue((int)sourceVector.Y, maxDistance),
@@ -58,11 +52,47 @@ namespace GraphicsProject
         {
             while (true)
             {
-                var value = random.Next(currentValue - maxDistance, currentValue + maxDistance);
+                var value = random.Next(currentValue - maxDistance, currentValue + maxDistance + 5);
                 if (Math.Abs(value - currentValue) < 5)
                     continue;
                 return value;
             }
+        }
+
+        private Node GetRandomCloseNode(Node pNode)
+        {
+            Node next;
+            Node tempNext;
+            double shortest;
+            double tempShortest;
+
+            next = this.Nodes[random.Next(0, Nodes.Count - 1)];
+
+            while (pNode == next)
+            {
+                next = this.Nodes[random.Next(0, Nodes.Count - 1)];
+            }
+
+            shortest = pNode.distanceFrom(next);
+            // 5 Chances to find a closer node
+            for (int j = 0; j <= 10; j++)
+            {
+                // Make sure the next node isn't already a neighbor and isn't the current node
+                do
+                {
+                    tempNext = Nodes[random.Next(0, Nodes.Count)];
+                    tempShortest = pNode.distanceFrom(tempNext);
+                }
+                while (pNode.getNeighbors().Contains(tempNext) || tempShortest == 0);
+
+                // If it is closer than the currently selected next use that as next
+                if (shortest > tempShortest)
+                {
+                    shortest = tempShortest;
+                    next = tempNext;
+                }
+            }
+            return next;
         }
     }
 }

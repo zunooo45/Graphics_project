@@ -42,10 +42,6 @@ namespace GraphicsProject
             this.SetProjectionMatrix(this.GetFieldOfView());
             this.SetViewMatrix(Matrix4.LookAt(new Vector3(0, 0, 10), Vector3.Zero, new Vector3(0, 1, 0)));
 
-            this.pyramid = new Pyramid(this.program);
-            this.pyramid.OnLoad();
-            this.pyramid.SetPosition(new Vector3(-1.5f, 0, 0));
-
             var rand = new Random();
 
             for (int i = 0; i < 10; i++)

@@ -31,6 +31,7 @@ namespace GraphicsProject.Helpers
             modes.Add("Path",       new Vector3[] { new Vector3(1, 1, 0), new Vector3(0.5f, 0.5f, 0) });
             modes.Add("Start",      new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, 0.5f, 0) });
             modes.Add("End",        new Vector3[] { new Vector3(0, 0, 1), new Vector3(0, 0, 0.5f) });
+            modes.Add("Selected", new Vector3[] { new Vector3(0, 0, 1), new Vector3(0, 0, 0.5f) });
             this.setMode("Unvisited");
         }
 
@@ -90,12 +91,13 @@ namespace GraphicsProject.Helpers
 
         public void ResetColoring()
         {
-            this.cube.ResetColoring();
+            mode = "Unvisited";
+            this.setMode("Unvisited");
         }
 
         public void select()
         {
-            this.cube.select();
+            setMode("Selected");
         }
 
         public Cube getCube()

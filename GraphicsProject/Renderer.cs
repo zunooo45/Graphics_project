@@ -75,7 +75,7 @@ namespace GraphicsProject
 
             mouseFree = false;
  
-            this.LoadGraph(new SimpleTree(this.program));
+            this.LoadGraph(new BigGraph(this.program));
             this.GraphTraverser = g => new ShortestPathTraversal(g);
             //this.GraphTraverser = g => new DepthFirstTraversal(g, g.Nodes[0]);
         }
@@ -103,7 +103,8 @@ namespace GraphicsProject
             }
             else
             {
-                this.ResetGraph();
+                if(graphTraversal.Current.getMode() != "Start")
+                    this.ResetGraph();
             }
         }
 
@@ -157,7 +158,6 @@ namespace GraphicsProject
         {
             base.OnKeyDown(e);
 
-            const float shapeStep = 0.5f;
             const float cameraStep = 0.5f;
             switch (e.Key)
             {
@@ -204,12 +204,20 @@ namespace GraphicsProject
                     this.TraverseNode();
                     break;
                 case Key.Number1:
+                    RebuildGraph();
                     this.GraphTraverser = g => new ShortestPathTraversal(g);
                     break;
                 case Key.Number2:
+                    RebuildGraph();
                     this.GraphTraverser = g => new DepthFirstTraversal(g, g.Nodes[0]);
                     break;
             }
+        }
+
+        private void RebuildGraph()
+        {
+            this.graph.Dispose();
+            this.LoadGraph(new BigGraph(this.program));
         }
 
         private void ResetGraph()
