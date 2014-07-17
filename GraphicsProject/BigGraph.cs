@@ -13,7 +13,7 @@ namespace GraphicsProject
         public BigGraph(ShaderProgram program)
         {
             this.random = new Random((int)DateTime.Now.Ticks);
-            var currentPosition = new Vector3(0, 0, -100);
+            var currentPosition = new Vector3(0, 0, -200);
 
             for (int i = 0; i < 30; i++)
             {

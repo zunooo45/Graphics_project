@@ -59,7 +59,7 @@ namespace GraphicsProject
         {
             base.OnLoad(e);
 
-            this.Title = "Hello OpenTK!";
+            this.Title = "Graph Traversal";
             
             GL.ClearColor(Color.CornflowerBlue);
             GL.PointSize(5f);
@@ -75,7 +75,7 @@ namespace GraphicsProject
 
             mouseFree = false;
  
-            this.LoadGraph(new BigGraph(this.program));
+            this.LoadGraph(new SimpleTree(this.program));
             this.GraphTraverser = g => new ShortestPathTraversal(g);
             //this.GraphTraverser = g => new DepthFirstTraversal(g, g.Nodes[0]);
         }
@@ -204,20 +204,35 @@ namespace GraphicsProject
                     this.TraverseNode();
                     break;
                 case Key.Number1:
-                    RebuildGraph();
+                    RebuildGraph("BigGraph");
                     this.GraphTraverser = g => new ShortestPathTraversal(g);
                     break;
                 case Key.Number2:
-                    RebuildGraph();
+                    RebuildGraph("SimpleTree");
+                    this.GraphTraverser = g => new DepthFirstTraversal(g, g.Nodes[0]);
+                    break;
+                case Key.Number3:
+                    RebuildGraph("SimpleGraph");
                     this.GraphTraverser = g => new DepthFirstTraversal(g, g.Nodes[0]);
                     break;
             }
         }
 
-        private void RebuildGraph()
+        private void RebuildGraph(String type)
         {
             this.graph.Dispose();
-            this.LoadGraph(new BigGraph(this.program));
+            switch (type)
+            {
+                case "BigGraph":
+                    this.LoadGraph(new BigGraph(this.program));
+                    break;
+                case "SimpleTree":
+                    this.LoadGraph(new SimpleTree(this.program));
+                    break;
+                case "SimpleGraph":
+                    this.LoadGraph(new SimpleGraph(this.program));
+                    break;
+            }
         }
 
         private void ResetGraph()
