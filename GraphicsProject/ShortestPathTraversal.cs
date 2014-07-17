@@ -12,11 +12,17 @@ namespace GraphicsProject
         private readonly Graph graph;
         Queue<Node> worklist = new Queue<Node>();
         Dictionary<Node, bool> visited = new Dictionary<Node, bool>();
+        
+        private Node start;
+        private Node trace;
+        private Node end;
 
         public ShortestPathTraversal(Graph graph)
         {
             this.graph = graph;
             var nodes = graph.Nodes;
+
+
 
             visited.Add(nodes[0], false);
             worklist.Enqueue(nodes[0]);
