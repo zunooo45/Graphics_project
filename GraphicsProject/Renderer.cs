@@ -212,6 +212,10 @@ namespace GraphicsProject
                     this.GraphTraverser = g => new DepthFirstTraversal(g, g.Nodes[0]);
                     break;
                 case Key.Number3:
+                    RebuildGraph("SimpleTree");
+                    this.GraphTraverser = g => new LevelTraversal(g);
+                    break;
+                case Key.Number4:
                     RebuildGraph("SimpleGraph");
                     this.GraphTraverser = g => new DepthFirstTraversal(g, g.Nodes[0]);
                     break;
